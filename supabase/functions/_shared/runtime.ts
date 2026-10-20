@@ -1,8 +1,9 @@
-// Deno-side wiring for the edge functions: Supabase (service role), Stripe, Resend, Render.
+// Deno-side wiring for the edge functions: Supabase (service role), Stripe, SendGrid or Resend, Render.
 import Stripe from 'npm:stripe@23.0.0';
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import type { Deps, Result } from './shop.ts';
 import type { Email, OrderForEmail } from './emails.ts';
+import { mailRequest, type Provider } from './mail.ts';
 
 const get = (name: string) => Deno.env.get(name) ?? '';
 function need(name: string): string {
@@ -32,14 +33,12 @@ async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
 }
 
 async function sendEmail(e: Email): Promise<void> {
-  const key = get('RESEND_API_KEY');
-  if (!key) { console.log(`email skipped (no RESEND_API_KEY): ${e.subject} -> ${e.to}`); return; }
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(e.idempotencyKey ? { 'Idempotency-Key': e.idempotencyKey } : {}) },
-    body: JSON.stringify({ from: get('EMAIL_FROM') || 'BeadedByChar <orders@beadedbychar.com.au>', to: [e.to], reply_to: e.replyTo, subject: e.subject, html: e.html, text: e.text }),
-  });
-  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+  const sendgrid = get('SENDGRID_API_KEY'), resend = get('RESEND_API_KEY');
+  const provider: Provider | null = sendgrid ? 'sendgrid' : resend ? 'resend' : null;
+  if (!provider) { console.log(`email skipped (no SENDGRID_API_KEY or RESEND_API_KEY): ${e.subject} -> ${e.to}`); return; }
+  const { url, init } = mailRequest(provider, sendgrid || resend, get('EMAIL_FROM') || 'BeadedByChar <orders@beadedbychar.com.au>', e);
+  const res = await fetch(url, init);
+  if (!res.ok) throw new Error(`${provider} ${res.status}: ${await res.text()}`);
 }
 
 export async function rebuildSite(): Promise<void> {
