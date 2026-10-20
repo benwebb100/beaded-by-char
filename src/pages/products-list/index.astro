@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductList from '../../components/ProductList.astro';
+import { products } from '../../lib/catalog';
+---
+<Base title="Products | BeadedByChar" fonts="b">
+  <ProductList products={products} />
+</Base>

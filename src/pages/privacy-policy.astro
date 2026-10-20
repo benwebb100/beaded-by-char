@@ -1,0 +1,8 @@
+---
+import Base from '../layouts/Base.astro';
+import Legal from '../components/Legal.astro';
+import html from '../content/privacy.html?raw';
+---
+<Base title="Privacy Policy | BeadedByChar" fonts="b" header="logo">
+  <Legal title="Privacy Policy" html={html} />
+</Base>

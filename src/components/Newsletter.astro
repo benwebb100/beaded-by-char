@@ -1,0 +1,75 @@
+---
+// Posts to PUBLIC_NEWSLETTER_ENDPOINT when set (wired up with the Supabase step).
+const endpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT ?? '';
+---
+<section class="news">
+  <div class="intro">
+    <p class="kicker">Stay In Touch</p>
+    <h2>Join Our Exclusive Newsletter</h2>
+    <hr class="divider" />
+    <p class="copy">Stay in the loop with BeadedByChar's Newsletter.</p>
+    <p class="copy">Get access to exclusive products, deals, the latest news and so much more.</p>
+  </div>
+  <form class="form" data-endpoint={endpoint}>
+    <label>First Name <span>*</span><input name="first_name" placeholder="First Name" required autocomplete="given-name" /></label>
+    <label>Last Name <span>*</span><input name="last_name" placeholder="Last Name" required autocomplete="family-name" /></label>
+    <label>Email <span>*</span>
+      <span class="with-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2 7l8.165 5.715c.661.463.992.695 1.351.784a2 2 0 00.968 0c.36-.09.69-.32 1.351-.784L22 7M6.8 20h10.4c1.68 0 2.52 0 3.162-.327a3 3 0 001.311-1.311C22 17.72 22 16.88 22 15.2V8.8c0-1.68 0-2.52-.327-3.162a3 3 0 00-1.311-1.311C19.72 4 18.88 4 17.2 4H6.8c-1.68 0-2.52 0-3.162.327a3 3 0 00-1.311 1.311C2 6.28 2 7.12 2 8.8v6.4c0 1.68 0 2.52.327 3.162a3 3 0 001.311 1.311C4.28 20 5.12 20 6.8 20z"/></svg>
+        <input name="email" type="email" placeholder="Email" required autocomplete="email" />
+      </span>
+    </label>
+    <button type="submit">Join Now</button>
+    <p class="status" role="status" hidden></p>
+  </form>
+</section>
+
+<style>
+  .news { background: var(--off); padding: 20px 0; min-height: 522px; display: grid; grid-template-columns: 575px 575px; justify-content: center; align-items: center; gap: 10px; }
+  .kicker { font: 400 14px/18.2px 'Open Sans', sans-serif; margin: 0; }
+  h2 { font: 700 32px/41.6px 'Urbanist', sans-serif; margin: 1px 0 15px; }
+  .intro .divider { width: 230px; margin: 0 0 15px; }
+  .copy { font: 400 23px/29.9px 'Urbanist', sans-serif; margin: 0; }
+  .form { padding: 30px 40px 0; display: flex; flex-direction: column; }
+  label { font: 500 14px/25.2px 'Inter', sans-serif; color: #030303; display: block; margin-bottom: 16px; }
+  label > input, .with-icon { margin-top: 9px; }
+  input { display: block; width: 100%; height: 36px; border: 1px solid #acacac; border-radius: 5px; background: #fff; padding: 8px 15px 8px 20px; font: 400 12px 'Inter', sans-serif; color: #000; }
+  input::placeholder { color: #333; opacity: 0.8; }
+  .with-icon { display: block; position: relative; }
+  .with-icon svg { position: absolute; left: 12px; top: 10px; width: 16px; height: 16px; color: #000; }
+  .with-icon input { padding-left: 36px; margin: 0; }
+  button { margin-top: 15px; height: 47px; background: #fff; border: 1px solid #000; border-radius: 5px; font: 400 15px/27px 'Inter', sans-serif; color: #000; }
+  .status { font: 400 14px 'Inter', sans-serif; margin: 12px 0 0; }
+
+  @media (max-width: 1200px) {
+    .news { grid-template-columns: 1fr 1fr; padding: 20px; }
+  }
+  @media (max-width: 767px) {
+    .news { grid-template-columns: 1fr; padding: 50px 10px 44px; gap: 20px; }
+    h2 { width: 257px; }
+    .intro .divider { width: 148px; }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.news .form')!;
+  const status = form.querySelector<HTMLElement>('.status')!;
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const endpoint = form.dataset.endpoint;
+    status.hidden = false;
+    if (!endpoint) { status.textContent = 'Thanks! (Sign-ups are not saved on this test site yet.)'; return; }
+    const button = form.querySelector('button')!;
+    button.disabled = true;
+    try {
+      const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
+      if (!res.ok) throw new Error();
+      form.reset();
+      status.textContent = "Thanks for joining! You're on the list.";
+    } catch {
+      status.textContent = 'Something went wrong. Please try again.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

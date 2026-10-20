@@ -1,0 +1,89 @@
+---
+import { aud, card, type Product } from '../lib/catalog';
+
+interface Props { products: Product[] }
+const cards = Astro.props.products.map(card);
+---
+<section class="head">
+  <h1>Browse Collection</h1>
+  <hr class="divider" />
+  <p>Select your preference below</p>
+</section>
+<section class="body">
+  <div class="grid" data-per-page="6">
+    {cards.map(c => (
+      <a href={c.url} class="card">
+        {c.image ? <img src={c.image} alt={c.name} width="351" height="351" loading="lazy" /> : <div class="noimg" />}
+        <p class="name">{c.name}</p>
+        {c.price === null ? <p class="unavailable">Currently unavailable</p> : <p class="price">{aud(c.price)}</p>}
+      </a>
+    ))}
+  </div>
+  {cards.length === 0 && <p class="empty">No products in this collection yet.</p>}
+  <nav class="pager" hidden>
+    <button type="button" data-prev>Previous</button>
+    <span data-label></span>
+    <button type="button" data-next>Next</button>
+  </nav>
+</section>
+
+<style>
+  .head { background: #fff; padding: 45px 20px 45px; text-align: center; }
+  h1 { font: 500 53px/68.9px 'Montserrat', sans-serif; margin: 0; }
+  .divider { width: 348px; margin: 10px auto 15px; }
+  .head p { font: 400 23px/29.9px 'Montserrat', sans-serif; margin: 0; }
+  .body { background: #fff; padding: 55px 20px 67px; }
+  .grid { max-width: 1160px; margin: 0 auto; padding: 0 19px; display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 35px; row-gap: 32px; }
+  .card { display: block; min-width: 0; }
+  .card[hidden] { display: none; }
+  .card img, .noimg { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: #eee; }
+  .name { font: 400 16px/20px 'Montserrat', sans-serif; margin: 24px 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .price { font: 500 18px/28.8px 'Montserrat', sans-serif; margin: 0; }
+  .unavailable { font: 400 14px/17px 'Lato', sans-serif; color: var(--muted); margin: 17px 0 0; }
+  .empty { text-align: center; font: 400 16px 'Lato', sans-serif; }
+  .pager { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 28px; font: 400 16px 'Lato', sans-serif; }
+  .pager[hidden] { display: none; }
+  .pager button { background: none; border: 2px solid #d3d3d3; border-radius: 8px; padding: 8px 16px; font: 400 14px 'Lato', sans-serif; color: #000; }
+  .pager button:disabled { color: #777; cursor: default; opacity: 0.8; }
+
+  @media (max-width: 767px) {
+    .head { padding: 40px 16px 30px; }
+    .body { padding: 50px 22px 60px; }
+    .grid { grid-template-columns: 1fr 1fr; column-gap: 24px; row-gap: 30px; padding: 0; }
+    .name { font-size: 14px; margin: 22px 0 8px; }
+    .price { font-size: 16px; }
+  }
+</style>
+
+<script>
+  // Show six cards a page, like the old store. Without JS every card stays visible.
+  const grid = document.querySelector<HTMLElement>('.grid[data-per-page]');
+  if (grid) {
+    const cards = [...grid.children] as HTMLElement[];
+    const per = Number(grid.dataset.perPage);
+    const pages = Math.ceil(cards.length / per);
+    const pager = document.querySelector<HTMLElement>('.pager')!;
+    const prev = pager.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = pager.querySelector<HTMLButtonElement>('[data-next]')!;
+    const label = pager.querySelector<HTMLElement>('[data-label]')!;
+    const params = new URLSearchParams(location.search);
+    let page = Math.min(Math.max(Number(params.get('page')) || 1, 1), Math.max(pages, 1));
+
+    const show = (scroll: boolean) => {
+      cards.forEach((c, i) => { c.hidden = i < (page - 1) * per || i >= page * per; });
+      label.textContent = `Page ${page} / ${pages}`;
+      prev.disabled = page === 1;
+      next.disabled = page === pages;
+      const url = new URL(location.href);
+      if (page === 1) url.searchParams.delete('page'); else url.searchParams.set('page', String(page));
+      history.replaceState(null, '', url);
+      if (scroll) grid.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    };
+    if (pages > 1) {
+      pager.hidden = false;
+      prev.addEventListener('click', () => { page--; show(true); });
+      next.addEventListener('click', () => { page++; show(true); });
+    }
+    show(false);
+  }
+</script>

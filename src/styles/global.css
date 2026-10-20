@@ -1,0 +1,30 @@
+:root {
+  --pink: #fbb6ce;
+  --rose: #e09faf;
+  --rose-dark: #c96a7e;
+  --off: #fafafa;
+  --ink: #000;
+  --grey: #373737;
+  --line: #d0d5dd;
+  --label: #344054;
+  --muted: #667085;
+  /* The GHL pages mixed two font pairings; each page picks one with a body class. */
+  --f-head: 'Urbanist', sans-serif;
+  --f-body: 'Open Sans', sans-serif;
+  --f-serif: Times, 'Times New Roman', serif;
+}
+body.fonts-b { --f-head: 'Montserrat', sans-serif; --f-body: 'Lato', sans-serif; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--off); color: var(--ink); font-family: var(--f-body); }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+.wrap { width: 100%; max-width: 1160px; margin: 0 auto; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.divider { border: 0; border-top: 1px solid currentColor; margin: 0; }
+
+@media (max-width: 1200px) {
+  .wrap { padding-left: 20px; padding-right: 20px; }
+}

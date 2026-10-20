@@ -1,0 +1,7 @@
+.env
+node_modules/
+dist/
+.astro/
+# Working material from the GHL import: live-site captures, pulled account data
+# (includes customer details) and raw photo downloads. Kept locally only.
+discovery/

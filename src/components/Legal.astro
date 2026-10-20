@@ -1,0 +1,23 @@
+---
+interface Props { title: string; html: string }
+const { title, html } = Astro.props;
+// The imported text opens with its own bold title line; the page renders the title itself.
+const body = html.replace(/^\s*<p><strong>[^<]*<\/strong><\/p>/, '');
+---
+<section class="legal">
+  <div class="inner">
+    <h1>{title}</h1>
+    <hr class="divider" />
+    <div class="text" set:html={body} />
+  </div>
+</section>
+
+<style>
+  .legal { background: #fff; padding: 25px 20px 60px; }
+  .inner { max-width: 1160px; margin: 0 auto; }
+  h1 { font: 700 32px/41.6px 'Montserrat', sans-serif; margin: 0; }
+  .divider { width: 290px; max-width: 100%; margin: 25px 0 34px; color: var(--grey); }
+  .text { font: 400 clamp(17px, 1.9vw, 27px)/1.3 'Lato', sans-serif; }
+  .text :global(p) { margin: 0 0 1.3em; }
+  .text :global(h1), .text :global(h2), .text :global(h3) { font: inherit; font-weight: 700; margin: 0; }
+</style>

@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import { collections, site, tileOrder } from '../lib/catalog';
+
+// The live page only listed the first five categories; this shows all ten.
+const tiles = tileOrder.map(slug => ({ slug, name: collections.find(c => c.slug === slug)?.name ?? slug, src: site.tiles[slug] }));
+---
+<Base title="Collections | BeadedByChar" fonts="b">
+  <section class="cats">
+    <h1>Shop By Category</h1>
+    <hr class="divider" />
+    <p class="sub">Select your preference below</p>
+    <div class="grid">
+      {tiles.map(t => (
+        <a href={`/products-list/collections/${t.slug}`} class="tile">
+          <img src={t.src} alt={t.name} width="466" height="466" loading="lazy" />
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="band">
+    <p>Hand made in Melbourne, Australia | All materials sourced sustainably | Made with Care</p>
+  </section>
+</Base>
+
+<style>
+  .cats { background: var(--pink); border-bottom: 1px solid #cbd5e0; padding: 45px 5px 46px; text-align: center; }
+  h1 { font: 400 50px/65px 'Montserrat', sans-serif; margin: 0; }
+  .divider { width: 143px; margin: 10px auto 10px; }
+  .sub { font: 400 18px/23.4px var(--f-serif); margin: 0; }
+  .grid { margin-top: 131px; display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 16px; row-gap: 83px; }
+  .tile img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; transition: transform 0.25s; }
+  .tile:hover img { transform: scale(1.03); }
+  .band { background: var(--rose); padding: 50px 20px; text-align: center; }
+  .band p { margin: 0; font: 700 14px/19px 'Open Sans', sans-serif; }
+
+  @media (max-width: 767px) {
+    .cats { padding: 30px 12px; }
+    h1 { font-size: 32px; line-height: 42px; }
+    .grid { grid-template-columns: 1fr 1fr; column-gap: 12px; row-gap: 24px; margin-top: 40px; }
+  }
+</style>

@@ -1,0 +1,8 @@
+---
+import Base from '../layouts/Base.astro';
+import Legal from '../components/Legal.astro';
+import html from '../content/terms.html?raw';
+---
+<Base title="Terms of Service | BeadedByChar" fonts="b" header="logo">
+  <Legal title="Terms of Service" html={html} />
+</Base>

@@ -1,0 +1,157 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { products, productUrl, aud, fromPrice, type Product } from '../../../lib/catalog';
+
+export function getStaticPaths() {
+  return products.map(p => ({ params: { id: p.id }, props: { product: p } }));
+}
+const { product } = Astro.props as { product: Product };
+const first = fromPrice(product);
+const plain = product.description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const clientData = { id: product.id, name: product.name, url: productUrl(product), image: product.images[0] ?? null, options: product.options, prices: product.prices };
+---
+<Base title={product.name} description={plain.slice(0, 160) || undefined} image={product.images[0]}>
+  <section class="pd">
+    <div class="gallery">
+      <div class="main">
+        {product.images[0] && <img src={product.images[0]} alt={product.name} width="430" height="430" data-main />}
+      </div>
+      {product.images.length > 0 && (
+        <div class="thumbs">
+          {product.images.map((src, i) => (
+            <button type="button" class:list={['thumb', { active: i === 0 }]} data-src={src} aria-label={`Show image ${i + 1}`}>
+              <img src={src} alt="" width="83" height="80" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="info">
+      <h1>{product.name}</h1>
+      <p class="price" data-price>{first === null ? 'Currently unavailable' : aud(first)}</p>
+
+      {product.options.length > 0 && (
+        <div class="options">
+          {product.options.map(o => (
+            <label>
+              <span>{o.name}</span>
+              <select data-option={o.id}>
+                {o.values.map(v => <option value={v.id}>{v.name}</option>)}
+              </select>
+            </label>
+          ))}
+        </div>
+      )}
+
+      <p class="label">Quantity</p>
+      <div class="qty">
+        <button type="button" data-step="-1" aria-label="Decrease quantity"><svg viewBox="0 0 20 20" width="20" height="20"><path d="M4.167 10h11.666" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" /></svg></button>
+        <input type="number" value="1" min="1" max="99" inputmode="numeric" aria-label="Quantity" data-qty />
+        <button type="button" data-step="1" aria-label="Increase quantity"><svg viewBox="0 0 20 20" width="20" height="20"><path d="M10 4.167v11.666M4.167 10h11.666" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" /></svg></button>
+      </div>
+
+      <button type="button" class="add" data-add>Add to Cart</button>
+      <p class="added" data-added hidden>Added to your cart. <a href="/cart">View cart</a></p>
+
+      {product.description && <div class="desc" set:html={product.description} />}
+    </div>
+  </section>
+  <script type="application/json" id="product-data" set:html={JSON.stringify(clientData)} />
+</Base>
+
+<style>
+  .pd { max-width: 1160px; margin: 0 auto; padding: 55px 10px 55px; display: grid; grid-template-columns: 430px 430px; column-gap: 40px; }
+  .main { width: 430px; height: 430px; }
+  .main img { width: 100%; height: 100%; object-fit: contain; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .thumb { width: 83px; height: 80px; padding: 0; border: 2px solid transparent; background: none; }
+  .thumb.active { border-color: rgb(0, 78, 235); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  h1 { font: 400 16px/24px 'Urbanist', sans-serif; margin: 0; }
+  .price { font: 500 18px/22px 'Urbanist', sans-serif; margin: 10px 0 0; }
+  .options { display: grid; grid-template-columns: 207px 207px; gap: 16px; margin-top: 24px; }
+  .options label span, .label { display: block; font: 600 14px/17px 'Lato', sans-serif; color: var(--label); margin: 0 0 6px; }
+  select { width: 100%; height: 44px; border: 1px solid var(--line); border-radius: 8px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none'%3E%3Cpath d='m5 7.5 5 5 5-5' stroke='%23344054' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center; appearance: none; padding: 8px 40px 8px 12px; font: 400 14px 'Lato', sans-serif; color: #101828; }
+  .label { margin-top: 24px; }
+  .qty { width: 207px; height: 44px; border: 1px solid var(--line); border-radius: 8px; background: #fff; display: flex; align-items: center; padding: 0 14px; }
+  .qty button { background: none; border: 0; padding: 0; width: 20px; height: 20px; color: #000; }
+  .qty input { flex: 1; min-width: 0; border: 0; text-align: center; font: 400 14px 'Lato', sans-serif; -moz-appearance: textfield; }
+  .qty input::-webkit-inner-spin-button, .qty input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .add { display: block; width: 100%; height: 48px; margin-top: 24px; background: var(--pink); color: #fff; border: 1px solid transparent; font: 700 16px 'Open Sans', sans-serif; }
+  .add:hover:not(:disabled) { filter: brightness(0.96); }
+  .add:disabled { opacity: 0.6; cursor: default; }
+  .added { font: 400 14px 'Lato', sans-serif; margin: 10px 0 0; }
+  .added a { text-decoration: underline; }
+  .desc { margin-top: 32px; font: 400 16px/26px 'Roboto', sans-serif; color: #000; }
+  .desc :global(p) { margin: 0 0 12px; }
+
+  @media (max-width: 960px) {
+    .pd { grid-template-columns: 1fr; padding: 55px 20px; }
+    .main { width: 100%; height: auto; aspect-ratio: 1; max-height: 360px; }
+    .info { margin-top: 28px; }
+    .options { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<script>
+  import { addToCart } from '../../../scripts/cart';
+  import type { Option, Price } from '../../../lib/catalog';
+
+  type Data = { id: string; name: string; url: string; image: string | null; options: Option[]; prices: Price[] };
+  const data: Data = JSON.parse(document.getElementById('product-data')!.textContent!);
+  const priceEl = document.querySelector<HTMLElement>('[data-price]')!;
+  const add = document.querySelector<HTMLButtonElement>('[data-add]')!;
+  const added = document.querySelector<HTMLElement>('[data-added]')!;
+  const qty = document.querySelector<HTMLInputElement>('[data-qty]')!;
+  const selects = [...document.querySelectorAll<HTMLSelectElement>('select[data-option]')];
+  const aud = (n: number) => `AU$${n.toFixed(2)}`;
+  const inStock = (p: Price) => !p.trackInventory || p.allowOutOfStock || (p.quantity ?? 0) > 0;
+
+  function current(): Price | undefined {
+    const chosen = selects.map(s => s.value);
+    return data.prices.find(p => chosen.every(v => p.optionValueIds.includes(v)) && p.optionValueIds.length === chosen.length)
+      ?? (chosen.length === 0 ? data.prices[0] : undefined);
+  }
+
+  function paint() {
+    const p = current();
+    const ok = !!p && inStock(p);
+    priceEl.textContent = p ? aud(p.amount) : 'Currently unavailable';
+    add.disabled = !ok;
+    add.textContent = ok ? 'Add to Cart' : p ? 'Out of stock' : 'Currently unavailable';
+    if (p && p.trackInventory && !p.allowOutOfStock) qty.max = String(Math.max(p.quantity ?? 0, 1));
+    else qty.max = '99';
+    clampQty();
+  }
+
+  const clampQty = () => { qty.value = String(Math.min(Math.max(Number(qty.value) || 1, 1), Number(qty.max))); };
+
+  selects.forEach(s => s.addEventListener('change', () => { added.hidden = true; paint(); }));
+  document.querySelectorAll<HTMLButtonElement>('[data-step]').forEach(b => b.addEventListener('click', () => {
+    qty.value = String((Number(qty.value) || 1) + Number(b.dataset.step));
+    clampQty();
+  }));
+  qty.addEventListener('change', clampQty);
+
+  add.addEventListener('click', () => {
+    const p = current();
+    if (!p || !inStock(p)) return;
+    const variant = selects.map(s => s.selectedOptions[0].textContent).join(' / ');
+    addToCart({ priceId: p.id, productId: data.id, name: data.name, variant, amount: p.amount, image: data.image, url: data.url, qty: Number(qty.value) });
+    added.hidden = false;
+  });
+
+  // Start on the first variant that's for sale, as the old store did.
+  const start = data.prices.find(inStock) ?? data.prices[0];
+  if (start) selects.forEach(s => { const v = start.optionValueIds.find(id => [...s.options].some(o => o.value === id)); if (v) s.value = v; });
+
+  const main = document.querySelector<HTMLImageElement>('[data-main]');
+  document.querySelectorAll<HTMLButtonElement>('.thumb').forEach(t => t.addEventListener('click', () => {
+    if (main) main.src = t.dataset.src!;
+    document.querySelectorAll('.thumb').forEach(x => x.classList.toggle('active', x === t));
+  }));
+
+  paint();
+</script>

@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="About | BeadedByChar" fonts="b">
+  <section class="about">
+    <div class="inner">
+      <p class="kicker">About | Learn More</p>
+      <h1>My story</h1>
+      <hr class="divider" />
+      <p>Hi! I'm Charlee, a creator based in Melbourne, Australia, and at BeadedByChar, I believe that the magic of individual expression blossoms through unique accessories.</p>
+      <p>My mission transcends beyond simply creating trinkets; it's about cultivating a connection between personal style and the whimsical joys of life. Each handcrafted piece in my collection, from the charm of keychains to the elegance of pens and the playful spirit of car diffusers, is infused with a meticulous harmony of vibrant design and thoughtful craftsmanship.</p>
+      <p>I am dedicated to sparking delight with items that not only accessorize but also celebrate the stories that make each of us unique. Join me in a world where every detail is an opportunity for joy and self-expression.</p>
+      <a href="/collections" class="btn">Shop Products</a>
+    </div>
+  </section>
+  <section class="vision">
+    <h2>My vision is to transform daily accessorizing into an act of personal expression and a testament to the art of handcrafting.</h2>
+  </section>
+</Base>
+
+<style>
+  .about { background: var(--off); border-bottom: 1px solid var(--grey); }
+  .inner { max-width: 1170px; margin: 0 auto; padding: 100px 40px 120px; font-family: 'Lato', sans-serif; }
+  .kicker { font-size: 16px; line-height: 20.8px; margin: 0; }
+  h1 { font: 700 32px/41.6px 'Aboreto', serif; margin: 2px 0 10px; }
+  .divider { width: 436px; margin: 0 0 15px; }
+  p:not(.kicker) { font-size: 19px; line-height: 24.7px; margin: 0 0 24.7px; }
+  .btn { display: inline-block; margin-top: -4px; padding: 10px 25px; border: 1px solid var(--grey); border-radius: 20px; font: 700 16px/20px 'Lato', sans-serif; }
+  .btn:hover { background: var(--grey); color: #fff; }
+  .vision { background: var(--rose); padding: 30px 20px; min-height: 120px; }
+  .vision h2 { max-width: 960px; margin: 0 auto; text-align: center; font: 500 23px/29.9px 'Montserrat', sans-serif; color: #fff; }
+
+  @media (max-width: 767px) {
+    .inner { padding: 100px 16px 60px; }
+    .divider { width: 143px; }
+  }
+</style>

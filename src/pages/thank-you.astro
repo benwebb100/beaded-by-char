@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Thank you! | BeadedByChar">
+  <section class="msg">
+    <h1>Thank you for your order!</h1>
+    <p>We've received your order and emailed you a receipt. Charlee will let you know when it's on its way.</p>
+    <a href="/collections">Continue Shopping</a>
+  </section>
+</Base>
+
+<style>
+  .msg { max-width: 640px; margin: 0 auto; padding: 110px 20px; text-align: center; font-family: 'Open Sans', sans-serif; font-size: 16px; line-height: 1.6; }
+  h1 { font: 700 32px/1.3 'Urbanist', sans-serif; margin: 0 0 12px; }
+  a { display: inline-block; margin-top: 24px; padding: 11px 28px; background: var(--pink); color: #fff; font-weight: 700; }
+</style>
+
+<script>
+  import { clearCart } from '../scripts/cart';
+  // Stripe sends shoppers back here with ?session_id=… once they've paid.
+  if (new URLSearchParams(location.search).has('session_id')) clearCart();
+</script>

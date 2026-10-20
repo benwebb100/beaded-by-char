@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { collections, site, tileOrder } from '../lib/catalog';
+
+const tiles = tileOrder.map(slug => ({ slug, name: collections.find(c => c.slug === slug)?.name ?? slug, src: site.tiles[slug] }));
+---
+<Base title="BeadedByChar">
+  <section class="hero">
+    <h1>Cherish Unique Charm with My<br />Handmade Treasures</h1>
+  </section>
+  <div class="strip"></div>
+
+  <section class="cats">
+    <h2>Shop By Category</h2>
+    <div class="grid">
+      {tiles.map(t => (
+        <a href={`/products-list/collections/${t.slug}`} class="tile">
+          <img src={t.src} alt={t.name} width="405" height="405" loading="lazy" />
+          <span class="sr-only">{t.name}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Newsletter />
+
+  <section class="story">
+    <div class="panel">
+      <p class="kicker">Learn | About</p>
+      <h2>My story</h2>
+      <hr class="divider" />
+      <p>Hi! I'm Charlee, a creator based in Melbourne, Australia, and at BeadedByChar, I believe that the magic of individual expression blossoms through unique accessories.</p>
+      <p>My mission transcends beyond simply creating trinkets; it's about cultivating a connection between personal style and the whimsical joys of life. Each handcrafted piece in my collection, from the charm of keychains to the elegance of pens and the playful spirit of car diffusers, is infused with a meticulous harmony of vibrant design and thoughtful craftsmanship.</p>
+      <p>I am dedicated to sparking delight with items that not only accessorize but also celebrate the stories that make each of us unique. Join me in a world where every detail is an opportunity for joy and self-expression.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { background: var(--pink); height: 783px; padding: 329px 20px 0; text-align: center; }
+  .hero h1 { margin: 0; font: 700 70px/91px 'Urbanist', sans-serif; color: #fff; }
+  .strip { height: 32px; background: var(--rose); border-bottom: 1px solid var(--grey); }
+
+  .cats { background: var(--pink); border: 2px solid var(--rose-dark); padding: 20px 0 83px; }
+  .cats h2 { width: 826px; margin: 0 auto; font: 400 45px/55px 'Montserrat', sans-serif; }
+  .grid { width: 826px; margin: 32px auto 0; display: grid; grid-template-columns: 405px 405px; column-gap: 16px; row-gap: 68.5px; }
+  .tile img { width: 405px; height: 405px; object-fit: cover; transition: transform 0.25s; }
+  .tile:hover img { transform: scale(1.03); }
+
+  .story { background: var(--off); }
+  .story .panel { max-width: 1170px; margin: 0 auto; background: var(--rose); padding: 100px 40px; color: #fff; font-family: 'Open Sans', sans-serif; }
+  .story .kicker { font-size: 16px; line-height: 20.8px; margin: 0; }
+  .story h2 { font: 700 32px/41.6px 'Aboreto', serif; margin: 2px 0 10px; }
+  .story .divider { width: 436px; color: #fff; margin: 0 0 15px; }
+  .story p:not(.kicker) { font-size: 19px; line-height: 24.7px; margin: 0 0 24.7px; }
+  .story p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 900px) {
+    .cats h2, .grid { width: auto; padding: 0 12px; }
+    .cats { padding-bottom: 95px; }
+    .grid { grid-template-columns: 1fr 1fr; column-gap: 12px; row-gap: 85px; margin-top: 32px; }
+    .tile img { width: 100%; height: auto; aspect-ratio: 1; }
+  }
+  @media (max-width: 767px) {
+    .hero { height: 385px; padding-top: 77px; }
+    .hero h1 { font-size: 45px; line-height: 58.5px; }
+    .cats h2 { font-size: 24px; line-height: 29px; }
+    .story .panel { padding: 100px 16px; }
+    .story .divider { width: 143px; }
+  }
+</style>

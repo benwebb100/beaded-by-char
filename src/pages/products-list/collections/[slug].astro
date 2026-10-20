@@ -1,0 +1,14 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ProductList from '../../../components/ProductList.astro';
+import { collections, productsIn } from '../../../lib/catalog';
+
+export function getStaticPaths() {
+  return collections.map(c => ({ params: { slug: c.slug }, props: { name: c.name } }));
+}
+const { slug } = Astro.params;
+const { name } = Astro.props;
+---
+<Base title={`${name} | BeadedByChar`} fonts="b">
+  <ProductList products={productsIn(slug)} />
+</Base>
