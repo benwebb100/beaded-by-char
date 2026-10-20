@@ -10,19 +10,20 @@ Put keys in `.env` (gitignored), not in chat.
 - [x] Edge functions deployed (`checkout`, `stripe-webhook`, `newsletter`, `publish`) with `SITE_URL`, `ALLOWED_ORIGINS`, `EMAIL_FROM` set.
 - [x] Auth: sign-ups off, 8-character passwords, site URL and `/admin/` redirect URLs.
 - [x] GitHub secrets for the nightly backup and daily keep-alive; both run green.
+- [x] SendGrid: domain verified, key set as a function secret, password-reset emails sent via SendGrid SMTP.
 
 ## Ben
 | # | What | Gives us |
 |---|---|---|
 | 1 | Send Charlee the message asking her to invite you to her Stripe (role **Developer**). Then copy the **test** secret key into `.env` as `STRIPE_SECRET_KEY=sk_test_…` | Card payments into her account |
-| 2 | ⏳ Records not in Squarespace yet (checked 2026-10-21). SendGrid → Settings → Sender Authentication → **Authenticate Your Domain** → `beadedbychar.com.au` (DNS host: Other). Paste the CNAME records it shows into Squarespace DNS, then click Verify. They don't touch the Google email records | Emails from `orders@beadedbychar.com.au` that don't land in spam |
+| 2 | ✅ Verified 2026-10-21. SendGrid → Settings → Sender Authentication → **Authenticate Your Domain** → `beadedbychar.com.au` (DNS host: Other). Paste the CNAME records it shows into Squarespace DNS, then click Verify. They don't touch the Google email records | Emails from `orders@beadedbychar.com.au` that don't land in spam |
 | 3 | ✅ Done 2026-10-21 (in `.env` and set as a Supabase function secret). SendGrid → Settings → API Keys → Create → Restricted → **Mail Send: Full Access** | Order and newsletter emails, password-reset emails |
 | 4 | Connect the repo on Render (dashboard.render.com/blueprint/new?repo=https://github.com/benwebb100/beaded-by-char). When it asks: `PUBLIC_SUPABASE_URL=https://bisyuxxbysvjvnbhfddq.supabase.co`, `PUBLIC_SUPABASE_ANON_KEY=` the project's publishable key (`PUBLIC_SUPABASE_ANON_KEY` in `.env`). Then Settings → Deploy Hook → copy into `.env` as `RENDER_DEPLOY_HOOK=…` | The `onrender.com` test site; admin saves rebuild it |
 
 ## Claude, once those are in `.env`
 - Supabase secrets `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RENDER_DEPLOY_HOOK` (`SENDGRID_API_KEY` done); fix `SITE_URL` / `ALLOWED_ORIGINS` / auth redirect URLs if Render's URL isn't `beaded-by-char.onrender.com`.
 - Create the Stripe webhook → `https://bisyuxxbysvjvnbhfddq.supabase.co/functions/v1/stripe-webhook` for `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.expired`, `charge.refunded`.
-- Supabase Auth SMTP via SendGrid: already in `supabase/config.toml`. Run `supabase config push` with `.env` loaded once SendGrid shows the domain verified.
+- ~~Supabase Auth SMTP via SendGrid~~ done 2026-10-21 (`supabase/config.toml`, pushed with `.env` loaded).
 - Charlee's login: `node --env-file=.env scripts/create-admin.mjs info@beadedbychar.com.au <temp password>`.
 - Test on the `onrender.com` URL with Stripe's test card `4242 4242 4242 4242`: order lands in the admin, both emails arrive, stock drops, refund shows.
 
