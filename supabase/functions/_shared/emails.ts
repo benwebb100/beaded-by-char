@@ -1,7 +1,11 @@
 // Email templates: the customer's order confirmation, Charlee's new-order and newsletter alerts.
 // Table-based HTML with inline styles so they render in Gmail and Outlook.
 
-export type Email = { to: string; replyTo?: string; subject: string; html: string; text: string; idempotencyKey?: string };
+export type Email = { to: string | string[]; replyTo?: string; subject: string; html: string; text: string; idempotencyKey?: string };
+
+/** The shop's alert setting may hold several addresses: "info@…, someone@…". */
+export const emailList = (s: string) => s.split(/[,;\s]+/).map(x => x.trim()).filter(x => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));
+const alertTo = (notify: string) => { const to = emailList(notify); return to.length ? to : ['info@beadedbychar.com.au']; };
 
 export type OrderForEmail = {
   id: string;
@@ -57,7 +61,8 @@ function itemsText(o: OrderForEmail): string {
     + `\nSubtotal ${aud(o.subtotal)}\nShipping ${aud(o.shipping)}\nTotal ${aud(o.total)}`;
 }
 
-export function orderConfirmation(o: OrderForEmail, replyTo: string, site: string): Email {
+export function orderConfirmation(o: OrderForEmail, notify: string, site: string): Email {
+  const replyTo = emailList(notify)[0] ?? 'info@beadedbychar.com.au';
   const first = (o.customer_name ?? '').trim().split(/\s+/)[0] || 'there';
   const addr = addressLines(o.shipping_address);
   const html = layout(site, `Order #${o.number}`, `
@@ -71,7 +76,8 @@ export function orderConfirmation(o: OrderForEmail, replyTo: string, site: strin
   return { to: o.customer_email!, replyTo, subject: `Your BeadedByChar order #${o.number}`, html, text, idempotencyKey: `order-${o.id}-confirmation` };
 }
 
-export function orderAlert(o: OrderForEmail, to: string, site: string): Email {
+export function orderAlert(o: OrderForEmail, notify: string, site: string): Email {
+  const to = alertTo(notify);
   const addr = addressLines(o.shipping_address);
   const link = `${site}/admin/#/orders/${o.id}`;
   const html = layout(site, `New order #${o.number}`, `
@@ -85,7 +91,8 @@ export function orderAlert(o: OrderForEmail, to: string, site: string): Email {
   return { to, replyTo: o.customer_email ?? undefined, subject: `New order #${o.number} · ${aud(o.total)}`, html, text, idempotencyKey: `order-${o.id}-alert` };
 }
 
-export function newsletterAlert(c: { first: string; last: string; email: string }, to: string, site: string): Email {
+export function newsletterAlert(c: { first: string; last: string; email: string }, notify: string, site: string): Email {
+  const to = alertTo(notify);
   const name = `${c.first} ${c.last}`.trim();
   const html = layout(site, 'New newsletter sign-up', `
     <h1 style="margin:0 0 8px;font-size:22px">New newsletter sign-up</h1>

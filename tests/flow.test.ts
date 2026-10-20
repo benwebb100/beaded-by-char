@@ -25,7 +25,7 @@ test('cart → Stripe session → payment webhook → paid order, stock taken, e
     catch (e) { throw new Error((e as Error).message); }
   };
   const sessions: { params: unknown }[] = [];
-  const emails: { to: string; subject: string }[] = [];
+  const emails: { to: string | string[]; subject: string }[] = [];
   let rebuilds = 0;
   const deps: Deps = {
     env: { SITE_URL: 'https://beadedbychar.com.au' }, rpc,

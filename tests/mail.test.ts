@@ -27,3 +27,9 @@ test('from addresses parse with or without a name', () => {
   assert.deepEqual(parseFrom('orders@beadedbychar.com.au'), { email: 'orders@beadedbychar.com.au' });
   assert.deepEqual(parseFrom('  Beaded By Char  <a@b.co> '), { name: 'Beaded By Char', email: 'a@b.co' });
 });
+
+test('several recipients go in one email', () => {
+  const two = { ...email, to: ['info@beadedbychar.com.au', 'charlee@example.com'] };
+  assert.deepEqual(JSON.parse(mailRequest('sendgrid', 'k', 'a@b.co', two).init.body as string).personalizations, [{ to: [{ email: 'info@beadedbychar.com.au' }, { email: 'charlee@example.com' }] }]);
+  assert.deepEqual(JSON.parse(mailRequest('resend', 'k', 'a@b.co', two).init.body as string).to, ['info@beadedbychar.com.au', 'charlee@example.com']);
+});

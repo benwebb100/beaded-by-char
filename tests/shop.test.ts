@@ -21,13 +21,13 @@ const order: OrderForEmail = {
 };
 
 function fakeDeps(over: Partial<Deps> = {}) {
-  const calls = { rpc: [] as [string, Record<string, unknown>][], stripe: [] as unknown[], emails: [] as { to: string; subject: string }[], rebuilds: 0 };
+  const calls = { rpc: [] as [string, Record<string, unknown>][], stripe: [] as unknown[], emails: [] as { to: string | string[]; subject: string }[], rebuilds: 0 };
   const deps: Deps = {
     env: { SITE_URL: SITE },
     rpc: async (fn, args) => { calls.rpc.push([fn, args]); return undefined as never; },
     stripe: { checkout: { sessions: { create: async (params, opts) => { calls.stripe.push({ params, opts }); return { id: 'cs_test_123', url: 'https://checkout.stripe.com/c/pay/cs_test_123' }; } } } },
     getOrder: async () => order,
-    notifyEmail: async () => 'info@beadedbychar.com.au',
+    notifyEmail: async () => 'info@beadedbychar.com.au, charlee@example.com',
     sendEmail: async e => { calls.emails.push({ to: e.to, subject: e.subject }); },
     rebuildSite: async () => { calls.rebuilds++; },
     log: () => {},
@@ -108,7 +108,10 @@ test('a paid checkout records the order, emails the customer and Charlee, and re
   assert.equal(result, 'order #1001 paid');
   assert.equal(calls.rpc[0][0], 'mark_order_paid');
   assert.equal((calls.rpc[0][1].p_details as { customer_email: string }).customer_email, 'jane@example.com');
-  assert.deepEqual(calls.emails.map(e => e.to).sort(), ['info@beadedbychar.com.au', 'jane@example.com']);
+  assert.deepEqual(calls.emails.map(e => [e.subject, e.to]).sort(), [
+    ['New order #1001 · A$48.45', ['info@beadedbychar.com.au', 'charlee@example.com']],
+    ['Your BeadedByChar order #1001', 'jane@example.com'],
+  ]);
   assert.equal(calls.rebuilds, 1);
 });
 
@@ -172,6 +175,10 @@ test('emails escape customer-entered text and format the address', () => {
   assert.ok(c.html.includes('Thanks for your order, Jane!'));
   assert.ok(c.html.includes('A$25.00') && c.html.includes('A$48.45'));
   assert.ok(c.html.includes(`${SITE}/img/p/abc-0.webp`));
+  assert.equal(c.replyTo, 'info@beadedbychar.com.au');
+  assert.equal(orderConfirmation(order, 'info@beadedbychar.com.au, charlee@example.com', SITE).replyTo, 'info@beadedbychar.com.au');
+  assert.deepEqual(orderAlert(order, ' info@beadedbychar.com.au ;charlee@example.com,, nonsense ', SITE).to, ['info@beadedbychar.com.au', 'charlee@example.com']);
+  assert.deepEqual(orderAlert(order, '', SITE).to, ['info@beadedbychar.com.au']);
   const a = orderAlert({ ...order, oversold: true }, 'info@beadedbychar.com.au', SITE);
   assert.ok(a.html.includes(`${SITE}/admin/#/orders/ord-1`));
   assert.ok(a.html.includes('more of an item than you had in stock'));

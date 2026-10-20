@@ -11,6 +11,7 @@ export function parseFrom(from: string): { name?: string; email: string } {
 }
 
 export function mailRequest(provider: Provider, key: string, from: string, e: Email): { url: string; init: RequestInit } {
+  const to = Array.isArray(e.to) ? e.to : [e.to];
   if (provider === 'sendgrid') {
     return {
       url: 'https://api.sendgrid.com/v3/mail/send',
@@ -18,7 +19,7 @@ export function mailRequest(provider: Provider, key: string, from: string, e: Em
         method: 'POST',
         headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          personalizations: [{ to: [{ email: e.to }] }],
+          personalizations: [{ to: to.map(email => ({ email })) }],
           from: parseFrom(from),
           ...(e.replyTo ? { reply_to: { email: e.replyTo } } : {}),
           subject: e.subject,
@@ -35,7 +36,7 @@ export function mailRequest(provider: Provider, key: string, from: string, e: Em
     init: {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(e.idempotencyKey ? { 'Idempotency-Key': e.idempotencyKey } : {}) },
-      body: JSON.stringify({ from, to: [e.to], reply_to: e.replyTo, subject: e.subject, html: e.html, text: e.text }),
+      body: JSON.stringify({ from, to, reply_to: e.replyTo, subject: e.subject, html: e.html, text: e.text }),
     },
   };
 }

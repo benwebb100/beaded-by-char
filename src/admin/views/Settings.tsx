@@ -14,7 +14,7 @@ export function SettingsView({ email }: { email: string }) {
   const save = async (e: Event) => {
     e.preventDefault();
     setBusy(true);
-    try { await api.saveSettings({ shop_open: s.shop_open, shipping_amount: s.shipping_amount, shipping_label: s.shipping_label.trim() || 'Standard delivery', notify_email: s.notify_email.trim() }); toast('Settings saved'); }
+    try { await api.saveSettings({ shop_open: s.shop_open, shipping_amount: s.shipping_amount, shipping_label: s.shipping_label.trim() || 'Standard delivery', notify_email: s.notify_email.split(',').map(x => x.trim()).filter(Boolean).join(', ') }); toast('Settings saved'); }
     catch (err) { toast((err as Error).message, 'error'); }
     finally { setBusy(false); }
   };
@@ -34,7 +34,8 @@ export function SettingsView({ email }: { email: string }) {
         <p class="muted small">Untick to pause checkout, e.g. while you’re away. People can still browse.</p>
         <label class="inline">Shipping price $<input type="number" min="0" step="0.01" inputmode="decimal" value={s.shipping_amount} onInput={e => setS({ ...s, shipping_amount: Number(e.currentTarget.value) })} /></label>
         <label>Shipping name shown at checkout<input value={s.shipping_label} onInput={e => setS({ ...s, shipping_label: e.currentTarget.value })} /></label>
-        <label>Send new-order emails to<input type="email" required value={s.notify_email} onInput={e => setS({ ...s, notify_email: e.currentTarget.value })} /></label>
+        <label>Send new-order and newsletter emails to<input type="email" multiple required value={s.notify_email} onInput={e => setS({ ...s, notify_email: e.currentTarget.value })} /></label>
+        <p class="muted small">To send them to more than one address, separate them with commas.</p>
         <button class="btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save settings'}</button>
       </form>
 
