@@ -154,4 +154,16 @@ const clientData = { id: product.id, name: product.name, url: productUrl(product
   }));
 
   paint();
+
+  // The page is built ahead of time; check live prices and stock so a sold-out option shows as sold out.
+  const sb = import.meta.env.PUBLIC_SUPABASE_URL, key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  if (sb && key) {
+    fetch(`${sb}/rest/v1/prices?product_id=eq.${encodeURIComponent(data.id)}&select=id,option_value_ids,amount,track_inventory,quantity,allow_out_of_stock`, { headers: key.startsWith('sb_') ? { apikey: key } : { apikey: key, Authorization: `Bearer ${key}` } })
+      .then(r => (r.ok ? r.json() : Promise.reject()))
+      .then((rows: { id: string; option_value_ids: string[]; amount: number; track_inventory: boolean; quantity: number | null; allow_out_of_stock: boolean }[]) => {
+        data.prices = rows.map(r => ({ id: r.id, optionValueIds: r.option_value_ids, amount: Number(r.amount), compareAt: null, trackInventory: r.track_inventory, quantity: r.quantity, allowOutOfStock: r.allow_out_of_stock }));
+        paint();
+      })
+      .catch(() => { /* keep the built-in prices */ });
+  }
 </script>

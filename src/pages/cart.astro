@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-const checkoutEndpoint = import.meta.env.PUBLIC_CHECKOUT_ENDPOINT ?? '';
+import { CHECKOUT_URL } from '../lib/endpoints';
+const checkoutEndpoint = CHECKOUT_URL;
 ---
 <Base title="View Cart | BeadedByChar">
   <section class="cart" data-endpoint={checkoutEndpoint}>
@@ -89,7 +90,7 @@ const checkoutEndpoint = import.meta.env.PUBLIC_CHECKOUT_ENDPOINT ?? '';
   const tpl = document.querySelector<HTMLTemplateElement>('#line')!;
   const checkout = document.querySelector<HTMLButtonElement>('[data-checkout]')!;
   const error = document.querySelector<HTMLElement>('[data-error]')!;
-  const endpoint = document.querySelector<HTMLElement>('.cart')!.dataset.endpoint;
+  const endpoint = document.querySelector<HTMLElement>('section.cart[data-endpoint]')!.dataset.endpoint;
   const aud = (n: number) => `AU$${n.toFixed(2)}`;
 
   function render() {

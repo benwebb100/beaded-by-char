@@ -1,0 +1,13 @@
+{
+  "name": "BeadedByChar admin",
+  "short_name": "Shop admin",
+  "start_url": "/admin/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#f7f4f5",
+  "theme_color": "#e09faf",
+  "icons": [
+    { "src": "/img/site/admin-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/img/site/admin-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

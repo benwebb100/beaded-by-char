@@ -1,9 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Newsletter from '../components/Newsletter.astro';
-import { collections, site, tileOrder } from '../lib/catalog';
+import { tiles } from '../lib/catalog';
 
-const tiles = tileOrder.map(slug => ({ slug, name: collections.find(c => c.slug === slug)?.name ?? slug, src: site.tiles[slug] }));
 ---
 <Base title="BeadedByChar">
   <section class="hero">

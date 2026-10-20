@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/admin/**/*", "src/lib/**/*", "src/scripts/**/*", "src/env.d.ts"],
+  "compilerOptions": { "noEmit": true, "types": [] }
+}

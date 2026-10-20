@@ -1,54 +1,74 @@
 {
  "collections": [
   {
-   "id": "686e53ee360ca129f48dece7",
-   "name": "Candles",
-   "slug": "candles"
-  },
-  {
-   "id": "6732b7f8836fe962e691da87",
-   "name": "Tumblers",
-   "slug": "tumblers"
-  },
-  {
-   "id": "66ad9b39d6a71180e2651a18",
-   "name": "Room Sprays",
-   "slug": "room-sprays"
-  },
-  {
-   "id": "6666c855f73cf9935f26568e",
-   "name": "TikTok",
-   "slug": "tiktok"
-  },
-  {
-   "id": "662ca2faef6a63e9e20373c4",
-   "name": "Hair Claws",
-   "slug": "hair-claws"
-  },
-  {
-   "id": "662584c8bd0d679184087d7f",
-   "name": "Mystery",
-   "slug": "mystery"
-  },
-  {
-   "id": "662300b9bd0d67ae0008090e",
-   "name": "Car Diffuser",
-   "slug": "car-diffuser"
-  },
-  {
-   "id": "662300a4bd0d671b8b080909",
-   "name": "Scrunchies",
-   "slug": "scrunchies"
+   "id": "662300937c32be261f35ac36",
+   "name": "Keychains",
+   "slug": "keychains",
+   "image": "/img/site/tile-keychains.webp",
+   "sort": 0
   },
   {
    "id": "6623009abd0d6715c3080908",
    "name": "Pens",
-   "slug": "pens"
+   "slug": "pens",
+   "image": "/img/site/tile-pens.webp",
+   "sort": 1
   },
   {
-   "id": "662300937c32be261f35ac36",
-   "name": "Keychains",
-   "slug": "keychains"
+   "id": "662300a4bd0d671b8b080909",
+   "name": "Scrunchies",
+   "slug": "scrunchies",
+   "image": "/img/site/tile-scrunchies.webp",
+   "sort": 2
+  },
+  {
+   "id": "662300b9bd0d67ae0008090e",
+   "name": "Car Diffuser",
+   "slug": "car-diffuser",
+   "image": "/img/site/tile-car-diffuser.webp",
+   "sort": 3
+  },
+  {
+   "id": "662584c8bd0d679184087d7f",
+   "name": "Mystery",
+   "slug": "mystery",
+   "image": "/img/site/tile-mystery.webp",
+   "sort": 4
+  },
+  {
+   "id": "662ca2faef6a63e9e20373c4",
+   "name": "Hair Claws",
+   "slug": "hair-claws",
+   "image": "/img/site/tile-hair-claws.webp",
+   "sort": 5
+  },
+  {
+   "id": "6666c855f73cf9935f26568e",
+   "name": "TikTok",
+   "slug": "tiktok",
+   "image": "/img/site/tile-tiktok.webp",
+   "sort": 6
+  },
+  {
+   "id": "66ad9b39d6a71180e2651a18",
+   "name": "Room Sprays",
+   "slug": "room-sprays",
+   "image": "/img/site/tile-room-sprays.webp",
+   "sort": 7
+  },
+  {
+   "id": "6732b7f8836fe962e691da87",
+   "name": "Tumblers",
+   "slug": "tumblers",
+   "image": "/img/site/tile-tumblers.webp",
+   "sort": 8
+  },
+  {
+   "id": "686e53ee360ca129f48dece7",
+   "name": "Candles",
+   "slug": "candles",
+   "image": "/img/site/tile-candles.webp",
+   "sort": 9
   }
  ],
  "products": [

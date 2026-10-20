@@ -4,16 +4,24 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/sync-catalog.mjs && astro build",
     "preview": "astro preview",
-    "compare": "node scripts/compare.mjs"
+    "compare": "node scripts/compare.mjs",
+    "test": "node --test --disable-warning=ExperimentalWarning 'tests/*.test.mjs' 'tests/*.test.ts'"
   },
   "dependencies": {
-    "astro": "^7.4.1"
+    "@astrojs/preact": "^6.1.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "astro": "^7.4.1",
+    "preact": "^11.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
+    "deno": "^2.9.6",
     "playwright": "^1.64.1",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "stripe": "^23.0.0",
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=22.22.0"

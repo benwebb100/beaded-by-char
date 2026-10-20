@@ -11,6 +11,11 @@ services:
       # Keeps the onrender.com test site out of Google. Remove at cutover to the real domain.
       - key: PUBLIC_NOINDEX
         value: "true"
+      # From Supabase → Project Settings → API. Safe to expose: row-level security protects the data.
+      - key: PUBLIC_SUPABASE_URL
+        sync: false
+      - key: PUBLIC_SUPABASE_ANON_KEY
+        sync: false
     routes:
       # Old GHL home page URLs.
       - type: redirect

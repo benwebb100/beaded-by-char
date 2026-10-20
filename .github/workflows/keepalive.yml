@@ -1,0 +1,17 @@
+# Supabase pauses free projects after a week without requests. One small read a day prevents that.
+name: keepalive
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$SUPABASE_URL/rest/v1/settings?select=shop_open" -H "apikey: $KEY")
+          echo "Supabase answered $code"
+          test "$code" = 200
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}

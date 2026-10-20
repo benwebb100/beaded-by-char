@@ -1,9 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
-import { collections, site, tileOrder } from '../lib/catalog';
+import { tiles } from '../lib/catalog';
 
-// The live page only listed the first five categories; this shows all ten.
-const tiles = tileOrder.map(slug => ({ slug, name: collections.find(c => c.slug === slug)?.name ?? slug, src: site.tiles[slug] }));
+// The old GHL page only listed the first five categories; this shows them all.
 ---
 <Base title="Collections | BeadedByChar" fonts="b">
   <section class="cats">

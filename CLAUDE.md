@@ -2,18 +2,25 @@
 
 @/Users/benwebb/Documents/Obsidian Vault/02 Projects/Beaded by Char/_context/About.md
 
-This project rebuilds beadedbychar.com.au off GoHighLevel: a storefront clone on Render, plus Supabase, her Stripe account and an admin portal for Charlee.
+This project rebuilds beadedbychar.com.au off GoHighLevel: an Astro static storefront on Render, Supabase (Postgres, auth, storage, edge functions), Charlee's own Stripe account, Resend emails, and an admin portal for Charlee at `/admin`.
+
+`docs/LAUNCH.md` is the launch checklist: what's left, who does it, and the cutover steps.
 
 ## Layout
-- `src/` is the Astro static storefront. URLs match the old GHL site, e.g. `/product-details/product/<GHL product id>` and `/products-list/collections/<slug>`, so existing links keep working.
-- `src/data/catalog.json` holds the product catalogue (imported from GHL). Pages read it via `src/lib/catalog.ts`. The Supabase step replaces the JSON source and keeps the same shape.
-- The cart is client-side only (`src/scripts/cart.ts`, localStorage). Checkout must re-price every line server-side.
-- `render.yaml` defines the Render static site, the redirects for old GHL URLs and `PUBLIC_NOINDEX` for the test URL.
+- `src/pages/` holds the storefront. URLs match the old GHL site, e.g. `/product-details/product/<GHL product id>` and `/products-list/collections/<slug>`.
+- `src/data/catalog.json` is the catalogue the pages build from. `scripts/sync-catalog.mjs` refreshes it from Supabase before each build when `PUBLIC_SUPABASE_URL`/`PUBLIC_SUPABASE_ANON_KEY` are set; otherwise the committed copy is used.
+- The cart is client-side (`src/scripts/cart.ts`) and sends only price ids and quantities. The `checkout` function re-prices from the database.
+- `src/admin/` is the Preact admin (hash routes). With no Supabase env it runs in demo mode on sample data, except on the real domain.
+- `supabase/migrations/` holds the schema, RLS policies and the order/stock functions (`create_pending_order`, `mark_order_paid`, …).
+- `supabase/functions/` has `checkout`, `stripe-webhook`, `newsletter` and `publish`. Logic lives in `_shared/shop.ts` and `_shared/emails.ts`, with no Deno APIs, so Node tests import them. `_shared/runtime.ts` wires in the real Supabase, Stripe, Resend and Render clients.
+- After admin edits, the `publish` function hits the Render deploy hook.
 
-## Scripts
-- `npm run build` builds the site; `npx astro preview --port 4321` serves the build.
-- `node scripts/smoke.mjs [url]` clicks through the shop flow.
-- `node scripts/compare.mjs [url]` produces side-by-side screenshots against the live GHL site (in `discovery/compare/`).
-- One-off GHL importers (read-only, need `.env`): `scripts/ghl-pull.sh`, `scripts/ghl-catalog.sh`, `scripts/build-catalog.mjs`, `scripts/extract-legal.mjs`.
+## Commands
+- `npm test` runs the PGlite schema/RLS tests, unit tests and the full order flow. The GHL import test skips when `discovery/` is absent.
+- `npx tsc -p tsconfig.check.json` type-checks the admin. `npx deno check supabase/functions/*/index.ts` type-checks the functions.
+- `npm run build`; `npx astro preview --port 4321`.
+- Browser checks (need the preview running): `node scripts/smoke.mjs`, `node scripts/admin-smoke.mjs` (demo admin), `node scripts/compare.mjs` (side-by-side with the live GHL site).
+- Checkout in a browser without accounts: `node scripts/dev-backend.ts 8787`, build with `PUBLIC_CHECKOUT_ENDPOINT=http://127.0.0.1:8787/functions/v1/checkout PUBLIC_NEWSLETTER_ENDPOINT=http://127.0.0.1:8787/functions/v1/newsletter`, then `node scripts/e2e-local.mjs`. (Port 54321 is taken by CleanMyMac on this machine.)
+- One-offs that need `.env`: `scripts/ghl-*.sh` (read-only GHL pulls), `scripts/import-ghl.mjs` (refuses to re-run once website orders exist), `scripts/create-admin.mjs`.
 
 `discovery/` is gitignored working material and includes customer data from GHL. Never commit it.

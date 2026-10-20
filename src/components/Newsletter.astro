@@ -1,6 +1,6 @@
 ---
-// Posts to PUBLIC_NEWSLETTER_ENDPOINT when set (wired up with the Supabase step).
-const endpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT ?? '';
+import { NEWSLETTER_URL } from '../lib/endpoints';
+const endpoint = NEWSLETTER_URL;
 ---
 <section class="news">
   <div class="intro">
@@ -19,6 +19,7 @@ const endpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT ?? '';
         <input name="email" type="email" placeholder="Email" required autocomplete="email" />
       </span>
     </label>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
     <button type="submit">Join Now</button>
     <p class="status" role="status" hidden></p>
   </form>
@@ -40,6 +41,7 @@ const endpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT ?? '';
   .with-icon input { padding-left: 36px; margin: 0; }
   button { margin-top: 15px; height: 47px; background: #fff; border: 1px solid #000; border-radius: 5px; font: 400 15px/27px 'Inter', sans-serif; color: #000; }
   .status { font: 400 14px 'Inter', sans-serif; margin: 12px 0 0; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
   @media (max-width: 1200px) {
     .news { grid-template-columns: 1fr 1fr; padding: 20px; }
