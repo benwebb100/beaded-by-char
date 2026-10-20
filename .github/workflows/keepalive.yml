@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          if [ -z "$SUPABASE_URL" ]; then echo "Supabase not set up yet; skipping"; exit 0; fi
           code=$(curl -s -o /dev/null -w '%{http_code}' "$SUPABASE_URL/rest/v1/settings?select=shop_open" -H "apikey: $KEY")
           echo "Supabase answered $code"
           test "$code" = 200

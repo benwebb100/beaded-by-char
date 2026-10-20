@@ -4,7 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { getAll } from './lib/supabase-rest.mjs';
 
 const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !key) throw new Error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+if (!url || !key) { console.log('Supabase not set up yet; skipping backup'); process.exit(0); }
 await mkdir('backup', { recursive: true });
 for (const t of ['orders', 'order_items', 'contacts', 'products', 'prices', 'collections', 'product_collections', 'settings', 'admins']) {
   const rows = await getAll(url, key, `${t}?select=*`);
