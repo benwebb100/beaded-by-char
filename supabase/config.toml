@@ -214,14 +214,16 @@ otp_length = 6
 otp_expiry = 3600
 
 # Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# Password-reset emails go out through SendGrid (Ben's account) from the shop's own address.
+# Apply with: set -a; . ./.env; set +a; supabase config push   (needs the domain verified in SendGrid first)
+[auth.email.smtp]
+enabled = true
+host = "smtp.sendgrid.net"
+port = 587
+user = "apikey"
+pass = "env(SENDGRID_API_KEY)"
+admin_email = "orders@beadedbychar.com.au"
+sender_name = "BeadedByChar"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
